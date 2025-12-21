@@ -133,6 +133,7 @@ function addGamblingXP(userData, xp) {
     let leveledUp = false;
     while (userData.gambling.xp >= getGamblingXPForNextLevel(userData.gambling.level)) {
         userData.gambling.level++;
+        userData.gambling.xp = userData.gambling.xp - getGamblingXPForNextLevel
         leveledUp = true;
     }
 
