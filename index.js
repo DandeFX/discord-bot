@@ -22,6 +22,8 @@ const {
     userData
 } = require("./data/userData");
 
+const statsCommand = require("./commands/stats");
+
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -73,15 +75,13 @@ const DROP_CHANNEL_ID = "1450567294714515549";
 
 let currentDrop = null;
 let lastDropTime = 0;
-let dropLock = false; // verhindert gleichzeitige Starts
-
-// NEW: Ablauf + Nachricht tracken
+let dropLock = false; 
 let dropExpireTimer = null;
 let dropMessageId = null;
 
 async function startDrop(channel, force = false) {
     if (!channel) return;
-    if (dropLock) return; // schon ein Start aktiv
+    if (dropLock) return; 
     dropLock = true;
 
     const now = Date.now();
@@ -163,6 +163,11 @@ client.on("messageCreate", async message => {
     const data = getUserData(userId);
     const args = message.content.trim().split(/ +/);
     const command = args[0].toLowerCase();
+
+    
+    if (command === ".stats") {
+        return statsCommand.run(message, data);
+    }
 
     /* ========================
        .HELP
@@ -253,38 +258,6 @@ client.on("messageCreate", async message => {
 
         saveUserData();
     }
-
-    /* ========================
-       .stats
-    ======================== */
-        if (command === ".stats") {
-            const today = getTodayString();
-            let next = "Jetzt verfügbar ✅";
-
-        if (data.lastDaily === today) {
-            next = `In ${formatDuration(getTomorrowMidnight() - new Date())}`;
-        }
-
-        const highestCrashText = data.highestCrash
-            ? `${data.highestCrash.toFixed(2)}x`
-            : "Noch keiner";
-
-        const gambling = data.gambling || { xp: 0, level: 1 };
-        const nextXP = getGamblingXPForNextLevel(gambling.level);
-
-        message.reply(
-            `📊 **Statistiken von ${message.author.username}**\n` +
-            `💰 Punkte: ${data.points}\n` +
-            `🔥 Streak: ${data.streak}\n` +
-            `⏳ Nächstes Daily: ${next}\n` +
-            `🚀 Höchster erfolgreicher Crash: ${highestCrashText}\n\n` +
-            `🎰 **Gambling Addiction**\n` +
-            `📈 Level: ${gambling.level}\n` +
-            `✨ XP: ${gambling.xp.toFixed(2)} / ${nextXP.toFixed(2)}`
-        );
-    }
-
-
 
     /* ========================
        .Punkt(e)
