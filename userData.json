@@ -1,52 +1,52 @@
 {
   "363773286712344577": {
-    "points": 57,
-    "lastDaily": "2025-12-21",
-    "streak": 7,
+    "points": 217,
+    "lastDaily": "2025-12-22",
+    "streak": 8,
     "highestCrash": 3.21,
     "gambling": {
-      "xp": 11.283333333333333,
+      "xp": 43.71714550168506,
       "level": 1
     }
   },
   "399321151870074880": {
     "points": 0,
-    "lastDaily": "2025-12-21",
-    "streak": 7,
+    "lastDaily": "2025-12-22",
+    "streak": 8,
     "gambling": {
-      "xp": 73.64638500579305,
+      "xp": 82.24638500579302,
       "level": 1
     },
     "highestCrash": 0
   },
   "742821263164047474": {
-    "points": 1,
-    "lastDaily": "2025-12-21",
-    "streak": 1,
+    "points": 0,
+    "lastDaily": "2025-12-22",
+    "streak": 2,
     "gambling": {
-      "xp": 5.7,
+      "xp": 7,
       "level": 1
     },
     "highestCrash": 2.64
   },
   "410092006509903872": {
     "points": 0,
-    "lastDaily": "2025-12-21",
-    "streak": 7,
+    "lastDaily": "2025-12-22",
+    "streak": 8,
     "highestCrash": 3.47,
     "gambling": {
-      "xp": 500.31310162110594,
-      "level": 9
+      "xp": 214.37822341778548,
+      "level": 10
     }
   },
   "618852960834945027": {
-    "points": 40,
+    "points": 0,
     "lastDaily": "2025-12-21",
     "streak": 7,
-    "highestCrash": 1,
+    "highestCrash": 3.21,
     "gambling": {
-      "xp": 6.7,
-      "level": 1
+      "xp": 141.77168280109623,
+      "level": 2
     }
   }
 }

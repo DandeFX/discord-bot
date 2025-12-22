@@ -5,6 +5,12 @@ const fs = require("fs");
 const path = require("path");
 let activeCrashGame = null;
 
+const {
+    calculateGamblingXP,
+    getGamblingXPForNextLevel,
+    addGamblingXP
+} = require("./utils/gambling");
+
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -107,36 +113,6 @@ function formatDuration(ms) {
     const h = Math.floor(ms / 3600000);
     const m = Math.floor((ms % 3600000) / 60000);
     return `${h}h ${m}min`;
-}
-
-function calculateGamblingXP(einsatz, punkte) {
-    let xp;
-    if (punkte > 100) {
-        xp = (einsatz / punkte) * 10;
-    } else {
-        xp = einsatz / 10;
-    }
-    return xp;
-}
-
-function getGamblingXPForNextLevel(level) {
-    return Math.pow(1.2, level) * 100;
-}
-
-function addGamblingXP(userData, xp) {
-    if (!userData.gambling) {
-        userData.gambling = { xp: 0, level: 1 };
-    }
-
-    userData.gambling.xp += xp;
-
-    let leveledUp = false;
-    while (userData.gambling.xp >= getGamblingXPForNextLevel(userData.gambling.level)) {
-        userData.gambling.level++;
-        leveledUp = true;
-    }
-
-    return leveledUp;
 }
 
 /* ========================
