@@ -1,8 +1,6 @@
 require("dotenv").config();
 
 const { Client, GatewayIntentBits, PermissionsBitField, EmbedBuilder } = require("discord.js");
-const fs = require("fs");
-const path = require("path");
 let activeCrashGame = null;
 
 const {
@@ -16,6 +14,13 @@ const {
     getTomorrowMidnight,
     formatDuration
 } = require("./utils/time");
+
+const {
+    loadUserData,
+    saveUserData,
+    getUserData,
+    userData
+} = require("./data/userData");
 
 const client = new Client({
     intents: [
@@ -58,50 +63,6 @@ async function updateUserRank(member, points) {
     if (!member.roles.cache.has(newRole.id)) {
         await member.roles.add(newRole).catch(err => console.log("Fehler beim Hinzufügen:", err));
     }
-}
-
-const dataFile = path.join(__dirname, "userData.json");
-let userData = new Map();
-
-/* ========================
-   DATEN HANDLING
-======================== */
-
-function loadUserData() {
-    if (fs.existsSync(dataFile)) {
-        const raw = fs.readFileSync(dataFile);
-        const json = JSON.parse(raw);
-        userData = new Map(Object.entries(json));
-
-        for (let [, value] of userData) {
-            value.points = Number(value.points) || 0;
-            value.streak = Number(value.streak) || 0;
-            value.lastDaily = value.lastDaily ?? null;
-            
-            // Gambling XP & Level initialisieren, falls nicht vorhanden
-            if (!value.gambling) value.gambling = { xp: 0, level: 1 };
-            else {
-                value.gambling.xp = Number(value.gambling.xp) || 0;
-                value.gambling.level = Number(value.gambling.level) || 1;
-            }
-
-            // Optional: highestCrash absichern
-            if (!value.highestCrash) value.highestCrash = 0;
-            else value.highestCrash = Number(value.highestCrash);
-        }
-    }
-}
-
-function saveUserData() {
-    const obj = Object.fromEntries(userData);
-
-    // Sicherstellen, dass gambling immer existiert
-    for (const key in obj) {
-        if (!obj[key].gambling) obj[key].gambling = { xp: 0, level: 1 };
-        if (!obj[key].highestCrash) obj[key].highestCrash = 0;
-    }
-
-    fs.writeFileSync(dataFile, JSON.stringify(obj, null, 2));
 }
 
 /* ========================
@@ -199,11 +160,7 @@ client.on("messageCreate", async message => {
     if (message.author.bot) return;
 
     const userId = message.author.id;
-    if (!userData.has(userId)) {
-        userData.set(userId, { points: 0, lastDaily: null, streak: 0 });
-    }
-    const data = userData.get(userId);
-
+    const data = getUserData(userId);
     const args = message.content.trim().split(/ +/);
     const command = args[0].toLowerCase();
 
