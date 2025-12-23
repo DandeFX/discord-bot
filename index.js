@@ -128,10 +128,10 @@ async function startDrop(channel, force = false) {
 }
 
 /* ========================
-   DROP SCHEDULER (ALLE 20 MINUTEN)
+   DROP SCHEDULER (ALLE 30 MINUTEN)
 ======================== */
 
-const DROP_INTERVAL = 20 * 60 * 1000;
+const DROP_INTERVAL = 30 * 60 * 1000;
 
 /* ========================
    READY

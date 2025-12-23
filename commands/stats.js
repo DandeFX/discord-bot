@@ -19,11 +19,17 @@ module.exports = {
         }
 
         const highestCrashText = data.highestCrash
-            ? `${data.highestCrash.toFixed(2)}x`
+            ? `${Number(data.highestCrash).toFixed(2)}x`
             : "Noch keiner";
 
-        const gambling = data.gambling ?? { xp: 0, level: 1 };
-        const nextXP = getGamblingXPForNextLevel(gambling.level);
+        const gambling = {
+            xp: Number(data.gambling?.xp) || 0,
+            level: Number(data.gambling?.level) || 1
+        };
+
+        const nextXP = Number(
+            getGamblingXPForNextLevel(gambling.level)
+        ) || 0;
 
         await message.reply(
             `📊 **Statistiken von ${message.author.username}**\n` +
