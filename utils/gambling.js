@@ -1,31 +1,41 @@
-function calculateGamblingXP(einsatz, punkte) {
-    let xp;
-    if (punkte > 100) {
-        xp = (einsatz / punkte) * 10;
-    } else {
-        xp = einsatz / 10;
-    }
-    return xp;
-}
-
 function getGamblingXPForNextLevel(level) {
-    return Math.pow(1.2, level) * 100;
+    return 100 + (level - 1) * 50;
 }
 
-function addGamblingXP(userData, xp) {
-    if (!userData.gambling) {
-        userData.gambling = { xp: 0, level: 1 };
+function calculateGamblingXP(einsatz, punkte) {
+    if (punkte > 100) {
+        return (einsatz / punkte) * 10;
+    }
+    return einsatz / 10;
+}
+
+function addGamblingXP(data, xp) {
+    if (!data.gambling) {
+        data.gambling = { xp: 0, level: 1 };
     }
 
-    userData.gambling.xp += xp;
+    // 🔒 Zwang zu Numbers
+    data.gambling.xp = Number(data.gambling.xp) || 0;
+    data.gambling.level = Number(data.gambling.level) || 1;
+    xp = Number(xp) || 0;
+
+    data.gambling.xp += xp;
 
     let leveledUp = false;
-    while (userData.gambling.xp >= getGamblingXPForNextLevel(userData.gambling.level)) {
-        userData.gambling.xp = userData.gambling.xp - getGamblingXPForNextLevel
+
+    while (
+        data.gambling.xp >= getGamblingXPForNextLevel(data.gambling.level)
+    ) {
+        data.gambling.xp -= getGamblingXPForNextLevel(data.gambling.level);
+        data.gambling.level += 1;
         leveledUp = true;
     }
 
     return leveledUp;
+}
+
+function getGamblingXPForNextLevel(level) {
+    return Math.round(Math.pow(1.2, level) * 100);
 }
 
 module.exports = {
