@@ -23,6 +23,8 @@ const {
 } = require("./data/userData");
 
 const statsCommand = require("./commands/stats");
+const stpCommand = require("./commands/stp"); 
+
 
 const client = new Client({
     intents: [
@@ -169,6 +171,11 @@ client.on("messageCreate", async message => {
         return statsCommand.run(message, data);
     }
 
+    if (command === ".stp") {
+        return stpCommand.run(message, args);
+    }
+
+
     /* ========================
        .HELP
     ======================== */
@@ -198,7 +205,8 @@ client.on("messageCreate", async message => {
     `**.coinflip [Einsatz]** – 50/50  
     **.roulette [Einsatz] [Zahl/rot/schwarz/grün]**
     **.hot [Einsatz] [heads/tails]** – Heads or Tails
-    **.crash [Einsatz]** – Cashout vor dem Crash`
+    **.crash [Einsatz]** – Cashout vor dem Crash
+    **.stp [Einsatz] [Spieler]** - Schere, Stein, Papier gegen einen anderen Spieler`
     
                 },
                 {
