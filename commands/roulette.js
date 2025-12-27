@@ -58,7 +58,6 @@ module.exports = {
             }
         }
 
-        // Einsatz abziehen
         data.points -= bet;
 
         let wonPoints = 0;
@@ -67,7 +66,6 @@ module.exports = {
             data.points += wonPoints;
         }
 
-        // 🎰 XP
         const xp = calculateGamblingXP(bet, data.points);
         const leveledUp = addGamblingXP(data, xp);
 
@@ -77,7 +75,6 @@ module.exports = {
             );
         }
 
-        // Rang aktualisieren
         if (message.member && updateUserRank) {
             await updateUserRank(message.member, data.points);
         }

@@ -24,10 +24,8 @@ module.exports = {
             return message.reply("❌ Du hast nicht genug Punkt(e)!");
         }
 
-        // Einsatz abziehen
         data.points -= bet;
 
-        // 🎰 XP
         const xp = calculateGamblingXP(bet, data.points);
         const leveledUp = addGamblingXP(data, xp);
 
@@ -60,7 +58,6 @@ module.exports = {
             );
         }
 
-        // Rang aktualisieren
         if (message.member && updateUserRank) {
             await updateUserRank(message.member, data.points);
         }

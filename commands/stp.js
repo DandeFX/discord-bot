@@ -49,7 +49,6 @@ module.exports = {
             return message.reply("❌ Der Gegner hat nicht genug Punkte.");
         }
 
-        // --- ANFRAGE BUTTONS ---
         const requestRow = new ActionRowBuilder().addComponents(
             new ButtonBuilder()
                 .setCustomId("stp_accept")
