@@ -23,8 +23,8 @@ const {
 } = require("./data/userData");
 
 const statsCommand = require("./commands/stats");
-const stpCommand = require("./commands/stp"); 
-
+const stpCommand = require("./commands/stp");
+const coinflipCommand = require("./commands/coinflip");
 
 const client = new Client({
     intents: [
@@ -175,6 +175,9 @@ client.on("messageCreate", async message => {
         return stpCommand.run(message, args);
     }
 
+    if (command === ".coinflip") {
+        return coinflipCommand.run(message, args);
+    }
 
     /* ========================
        .HELP
@@ -299,37 +302,6 @@ client.on("messageCreate", async message => {
         message.reply(`🎁 ${amount} Punkt(e) an **${target.username}** verschenkt`);
         saveUserData();
     }
-
-    /* ========================
-       .COINFLIP
-    ======================== */
-    if (command === ".coinflip") {
-        const bet = parseInt(args[1]);
-        if (isNaN(bet) || bet <= 0) return message.reply("❌ .coinflip [Einsatz]");
-        if (data.points < bet) return message.reply("❌ Nicht genug Punkt(e)");
-
-    // 🎰 XP
-    const xp = calculateGamblingXP(bet, data.points);
-    const leveledUp = addGamblingXP(data, xp);
-
-    data.points -= bet;
-
-    if (Math.random() < 0.5) {
-        data.points += bet * 2;
-        message.reply(`🪙 **Gewonnen!** Neuer Stand: ${data.points}`);
-    } else {
-        message.reply(`🪙 **Verloren!** Neuer Stand: ${data.points}`);
-    }
-
-    if (leveledUp) {
-        message.channel.send(`🧠 Gambling Addiction **Level ${data.gambling.level}** erreicht!`);
-    }
-
-    if (message.member) await updateUserRank(message.member, data.points);
-    saveUserData();
-}
-
-
 
     /* ========================
        .LEADERBOARD
