@@ -14,7 +14,6 @@ function addGamblingXP(data, xp) {
         data.gambling = { xp: 0, level: 1 };
     }
 
-    // 🔒 Zwang zu Numbers
     data.gambling.xp = Number(data.gambling.xp) || 0;
     data.gambling.level = Number(data.gambling.level) || 1;
     xp = Number(xp) || 0;

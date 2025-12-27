@@ -30,7 +30,6 @@ module.exports = {
         data.points -= amount;
         targetData.points += amount;
 
-        // 🔄 Ränge aktualisieren
         if (message.member && updateUserRank) {
             await updateUserRank(message.member, data.points);
         }

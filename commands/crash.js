@@ -27,7 +27,6 @@ module.exports = {
             return message.reply("❌ Nicht genug Punkte!");
         }
 
-        // Einsatz abziehen
         data.points -= bet;
         saveUserData();
 
@@ -117,7 +116,6 @@ module.exports = {
             data.highestCrash = finalMultiplier;
         }
 
-        // 🎰 XP
         const xp = calculateGamblingXP(game.bet, data.points);
         const leveledUp = addGamblingXP(data, xp);
 
