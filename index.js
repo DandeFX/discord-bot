@@ -25,6 +25,7 @@ const {
 const statsCommand = require("./commands/stats");
 const stpCommand = require("./commands/stp");
 const coinflipCommand = require("./commands/coinflip");
+const rouletteCommand = require("./commands/roulette");
 
 const client = new Client({
     intents: [
@@ -179,6 +180,10 @@ client.on("messageCreate", async message => {
         return coinflipCommand.run(message, args);
     }
 
+    if (command === ".roulette") {
+        return rouletteCommand.run(message, args, data, updateUserRank);
+    }
+
     /* ========================
        .HELP
     ======================== */
@@ -322,74 +327,6 @@ client.on("messageCreate", async message => {
         }
 
         message.channel.send(text);
-    }
-
-    /* ========================
-       .ROULETTE
-    ======================== */
-    if (command === ".roulette") {
-        if (!args[1] || !args[2]) return message.reply("❌ Usage: .roulette [Einsatz] [Zahl/rot/schwarz/grün]");
-        
-        const bet = parseInt(args[1]);
-        const choice = args[2].toLowerCase();
-
-        if (isNaN(bet) || bet <= 0) return message.reply("❌ Ungültiger Einsatz!");
-        if (data.points < bet) return message.reply("❌ Du hast nicht genug Punkt(e)!");
-
-        const numbers = Array.from({ length: 37 }, (_, i) => i);
-        const colors = {
-            rot: [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36],
-            schwarz: [2,4,6,8,10,11,13,15,17,20,22,24,26,28,29,31,33,35],
-            grün: [0]
-        };
-
-        const result = numbers[Math.floor(Math.random() * numbers.length)];
-        let win = false;
-        let multiplier = 0;
-
-        if (choice === "rot" || choice === "schwarz") {
-            if (colors[choice].includes(result)) {
-                win = true;
-                multiplier = 2;
-            }
-        } else if (choice === "grün") {
-            if (result === 0) {
-                win = true;
-                multiplier = 35;
-            }
-        } else {
-            const chosenNumber = parseInt(choice);
-            if (!isNaN(chosenNumber) && chosenNumber >= 0 && chosenNumber <= 36) {
-                if (chosenNumber === result) {
-                    win = true;
-                    multiplier = 35;
-                }
-            } else {
-                return message.reply("❌ Ungültige Zahl! 0-36 oder rot/schwarz/grün erlaubt.");
-            }
-        }
-
-        let wonPoints = 0;
-
-        if (win) wonPoints = bet * multiplier;
-            data.points += wonPoints;
-
-        // 🎰 XP
-        const xp = calculateGamblingXP(bet, data.points);
-        const leveledUp = addGamblingXP(data, xp);
-
-        data.points -= bet;
-
-        if (leveledUp) {
-        message.channel.send(`🧠 Gambling Addiction **Level ${data.gambling.level}** erreicht!`);
-        }   
-
-
-        // Rang aktualisieren
-        if (message.member) await updateUserRank(message.member, data.points);
-
-        message.reply(`🎲 Roulette Ergebnis: **${result}**! ${win ? `Gewonnen: ${wonPoints} Punkt(e) 🎉` : "Verloren 😢"}. Dein aktueller Stand: **${data.points} Punkt(e)**`);
-        saveUserData();
     }
 
     /* ========================
