@@ -4,12 +4,6 @@ const { Client, GatewayIntentBits, PermissionsBitField, EmbedBuilder } = require
 const activeCrashGameRef = { game: null };
 
 const {
-    calculateGamblingXP,
-    getGamblingXPForNextLevel,
-    addGamblingXP
-} = require("./utils/gambling");
-
-const {
     getTodayString,
     getTomorrowMidnight,
     formatDuration
@@ -28,6 +22,7 @@ const coinflipCommand = require("./commands/coinflip");
 const rouletteCommand = require("./commands/roulette");
 const hotCommand = require("./commands/hot");
 const crashCommand = require("./commands/crash");
+const giftCommand = require("./commands/gift");
 
 const client = new Client({
     intents: [
@@ -198,6 +193,14 @@ client.on("messageCreate", async message => {
         return crashCommand.cashout(message, data, {activeCrashGameRef, updateUserRank});
     }
 
+    if (command === ".gift") {
+        return giftCommand.run(message, args, data, { updateUserRank });
+    }
+
+    if (command === ".ts") {
+        message.reply("Tim stinkt!")
+    }
+
     /* ========================
        .HELP
     ======================== */
@@ -296,30 +299,6 @@ client.on("messageCreate", async message => {
         const target = message.mentions.users.first() || message.author;
         if (!userData.has(target.id)) userData.set(target.id, { points: 0, lastDaily: null, streak: 0 });
         message.reply(`💰 **${target.username}** hat **${userData.get(target.id).points} Punkt(e)**`);
-    }
-
-    /* ========================
-       .GIFT
-    ======================== */
-    if (command === ".gift") {
-        const target = message.mentions.users.first();
-        const amount = parseInt(args[2]);
-
-        if (!target || isNaN(amount) || amount <= 0) return message.reply("❌ .gift @User [Punkt(e)]");
-        if (data.points < amount) return message.reply("❌ Nicht genug Punkt(e)");
-
-        if (!userData.has(target.id)) userData.set(target.id, { points: 0, lastDaily: null, streak: 0 });
-
-        data.points -= amount;
-        userData.get(target.id).points += amount;
-
-        // Rang aktualisieren
-        if (message.member) await updateUserRank(message.member, data.points);
-        const targetMember = await message.guild.members.fetch(target.id).catch(() => null);
-        if (targetMember) await updateUserRank(targetMember, userData.get(target.id).points);
-
-        message.reply(`🎁 ${amount} Punkt(e) an **${target.username}** verschenkt`);
-        saveUserData();
     }
 
     /* ========================
