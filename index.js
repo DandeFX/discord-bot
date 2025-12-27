@@ -1,13 +1,7 @@
 require("dotenv").config();
 
 const { Client, GatewayIntentBits, PermissionsBitField, EmbedBuilder } = require("discord.js");
-let activeCrashGame = null;
-
-const {
-    calculateGamblingXP,
-    getGamblingXPForNextLevel,
-    addGamblingXP
-} = require("./utils/gambling");
+const activeCrashGameRef = { game: null };
 
 const {
     getTodayString,
@@ -27,6 +21,8 @@ const stpCommand = require("./commands/stp");
 const coinflipCommand = require("./commands/coinflip");
 const rouletteCommand = require("./commands/roulette");
 const hotCommand = require("./commands/hot");
+const crashCommand = require("./commands/crash");
+const giftCommand = require("./commands/gift");
 
 const client = new Client({
     intents: [
@@ -189,6 +185,22 @@ client.on("messageCreate", async message => {
         return hotCommand.run(message, args, data, updateUserRank);
     }
 
+    if (command === ".crash") {
+        return crashCommand.run(message, args, data, {activeCrashGameRef, updateUserRank});
+    }
+
+    if (command === ".cashout") {
+        return crashCommand.cashout(message, data, {activeCrashGameRef, updateUserRank});
+    }
+
+    if (command === ".gift") {
+        return giftCommand.run(message, args, data, { updateUserRank });
+    }
+
+    if (command === ".ts") {
+        message.reply("Tim stinkt!")
+    }
+
     /* ========================
        .HELP
     ======================== */
@@ -287,30 +299,6 @@ client.on("messageCreate", async message => {
         const target = message.mentions.users.first() || message.author;
         if (!userData.has(target.id)) userData.set(target.id, { points: 0, lastDaily: null, streak: 0 });
         message.reply(`💰 **${target.username}** hat **${userData.get(target.id).points} Punkt(e)**`);
-    }
-
-    /* ========================
-       .GIFT
-    ======================== */
-    if (command === ".gift") {
-        const target = message.mentions.users.first();
-        const amount = parseInt(args[2]);
-
-        if (!target || isNaN(amount) || amount <= 0) return message.reply("❌ .gift @User [Punkt(e)]");
-        if (data.points < amount) return message.reply("❌ Nicht genug Punkt(e)");
-
-        if (!userData.has(target.id)) userData.set(target.id, { points: 0, lastDaily: null, streak: 0 });
-
-        data.points -= amount;
-        userData.get(target.id).points += amount;
-
-        // Rang aktualisieren
-        if (message.member) await updateUserRank(message.member, data.points);
-        const targetMember = await message.guild.members.fetch(target.id).catch(() => null);
-        if (targetMember) await updateUserRank(targetMember, userData.get(target.id).points);
-
-        message.reply(`🎁 ${amount} Punkt(e) an **${target.username}** verschenkt`);
-        saveUserData();
     }
 
     /* ========================
@@ -432,107 +420,6 @@ client.on("messageCreate", async message => {
         const channel = await client.channels.fetch(DROP_CHANNEL_ID).catch(() => null);
         if (!channel) return message.reply("❌ Drop-Channel nicht gefunden!");
         await startDrop(channel, true);
-    }
-
-   /* ========================
-    .CRASH / .CASHOUT
-    ======================== */
-    if (command === ".crash") {
-        if (activeCrashGame) return message.reply("❌ Es läuft bereits ein Crash-Spiel.");
-
-        const bet = parseInt(args[1]);
-        if (isNaN(bet) || bet <= 0) return message.reply("❌ .crash [Einsatz]");
-        if (data.points < bet) return message.reply("❌ Nicht genug Punkte!");
-
-        // Einsatz abziehen
-        data.points -= bet;
-        saveUserData();
-        // Crashpoint skaliert Win/Lose
-        const crashPoint = +(Math.pow(Math.random(), 5) * 9 + 1).toFixed(2);
-        let multiplier = 1.0;
-
-        const crashMsg = await message.reply(
-            `🚀 **CRASH gestartet!**\nEinsatz: ${bet} Punkte\n📈 Multiplikator: 1.00x\n💸 Tippe .cashout, um auszuzahlen`
-        );
-
-        activeCrashGame = {
-            userId,
-            bet,
-            multiplier,
-            crashPoint,
-            crashed: false,
-            cashedOut: false,
-            message: crashMsg,
-            interval: null,
-            editing: false
-        };
-
-        const growthFactor = 1.04; 
-        activeCrashGame.interval = setInterval(async () => {
-            const game = activeCrashGame;
-            if (!game || game.cashedOut || game.crashed || game.editing) return;
-
-            // Exponentielles Wachstum
-            game.multiplier = +(game.multiplier * growthFactor).toFixed(2);
-
-            // Crash prüfen
-            if (game.multiplier >= game.crashPoint) {
-                game.crashed = true;
-                clearInterval(game.interval);
-
-                await game.message.edit(
-                    `💥 **CRASH bei ${game.crashPoint.toFixed(2)}x!** ❌ Einsatz verloren 😢\n` +
-                    `Der Crashpoint dieses Spiels war: **${game.crashPoint.toFixed(2)}x**`
-                ).catch(() => {});
-
-                activeCrashGame = null;
-                return;
-            }
-
-            game.editing = true;
-            await game.message.edit(
-                `🚀 **CRASH läuft**\nEinsatz: ${game.bet} Punkte\n📈 Multiplikator: **${game.multiplier.toFixed(2)}x**\n💸 .cashout zum Auszahlen`
-            ).catch(() => {});
-            game.editing = false;
-
-        }, 800);
-    }
-
-    if (command === ".cashout") {
-        const game = activeCrashGame;
-        if (!game) return message.reply("❌ Aktuell läuft kein Crash-Spiel.");
-        if (game.userId !== userId) return message.reply("❌ Du spielst dieses Crash-Spiel nicht.");
-        if (game.cashedOut || game.crashed) return message.reply("❌ Zu spät zum Auscashen!");
-
-        game.cashedOut = true;
-        clearInterval(game.interval);
-
-        const finalMultiplier = Math.min(game.multiplier, game.crashPoint);
-        const win = Math.floor(game.bet * finalMultiplier);
-
-        data.points += win;
-
-        if (!data.highestCrash || finalMultiplier > data.highestCrash) {
-            data.highestCrash = finalMultiplier;
-        }
-
-        // 🎰 XP für Crash gewinnen
-        const xp = calculateGamblingXP(game.bet, data.points);
-        const leveledUp = addGamblingXP(data, xp);
-
-        if (leveledUp) {
-            message.channel.send(`🧠 Gambling Addiction **Level ${data.gambling.level}** erreicht!`);
-        }
-
-        saveUserData();
-        if (message.member) await updateUserRank(message.member, data.points);
-
-        await game.message.edit(
-            `💸 **CASHOUT ERFOLGREICH!**\n📈 Multiplikator: **${finalMultiplier.toFixed(2)}x**\n🎉 Gewinn: **${win} Punkte**\n` +
-            `Der Crashpoint dieses Spiels war: **${game.crashPoint.toFixed(2)}x**`
-        ).catch(() => {});
-
-        activeCrashGame = null;
     }
 });
 
