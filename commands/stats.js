@@ -5,11 +5,15 @@ const {
 } = require("../utils/time");
 
 const { getGamblingXPForNextLevel } = require("../utils/gambling");
+const { getUserData } = require("../data/userData");
 
 module.exports = {
     name: ".stats",
 
-    async run(message, data) {
+    async run(message) {
+        const targetUser = message.mentions.users.first() || message.author;
+        const data = getUserData(targetUser.id);
+
         const today = getTodayString();
         let next = "Jetzt verfügbar ✅";
 
@@ -32,7 +36,7 @@ module.exports = {
         ) || 0;
 
         await message.reply(
-            `📊 **Statistiken von ${message.author.username}**\n` +
+            `📊 **Statistiken von ${targetUser.username}**\n` +
             `💰 Punkte: ${data.points}\n` +
             `🔥 Streak: ${data.streak}\n` +
             `⏳ Nächstes Daily: ${next}\n` +

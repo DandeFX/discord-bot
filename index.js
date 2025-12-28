@@ -4,16 +4,9 @@ const { Client, GatewayIntentBits, PermissionsBitField } = require("discord.js")
 const activeCrashGameRef = { game: null };
 
 const {
-    getTodayString,
-    getTomorrowMidnight,
-    formatDuration
-} = require("./utils/time");
-
-const {
     loadUserData,
     saveUserData,
     getUserData,
-    userData
 } = require("./data/userData");
 
 const statsCommand = require("./commands/stats");
