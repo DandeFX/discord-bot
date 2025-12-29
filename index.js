@@ -1,6 +1,6 @@
 require("dotenv").config();
 
-const { Client, GatewayIntentBits, PermissionsBitField } = require("discord.js");
+const { Client, GatewayIntentBits } = require("discord.js");
 const activeCrashGameRef = { game: null };
 
 const {
@@ -33,8 +33,6 @@ const client = new Client({
     ]
 });
 
-/* ================= RANK SYSTEM ================= */
-
 async function updateUserRank(member, points) {
     if (!member?.guild) return;
 
@@ -62,8 +60,6 @@ async function updateUserRank(member, points) {
         await member.roles.add(newRole).catch(() => {});
     }
 }
-
-/* ================= DROP SYSTEM ================= */
 
 const DROP_CHANNEL_ID = "1450567294714515549";
 const DROP_INTERVAL = 30 * 60 * 1000;
@@ -120,8 +116,6 @@ async function startDrop(channel) {
     dropLock = false;
 }
 
-/* ================= READY ================= */
-
 client.once("ready", () => {
     console.log(`🤖 Bot online als ${client.user.tag}`);
     loadUserData();
@@ -133,8 +127,6 @@ client.once("ready", () => {
         await startDrop(channel);
     }, DROP_INTERVAL);
 });
-
-/* ================= COMMAND HANDLER ================= */
 
 client.on("messageCreate", async message => {
     if (message.author.bot) return;
@@ -193,60 +185,53 @@ client.on("messageCreate", async message => {
             return adminPointsCommand.run(message, args, { updateUserRank });
 
         case ".drop":
-            if (message.channel.id !== DROP_CHANNEL_ID) return;
+        if (message.channel.id !== DROP_CHANNEL_ID) return;
 
-            if (!currentDrop || currentDrop.claimed) {
-                return message.reply("❌ Aktuell ist kein Drop aktiv.");
-            }
+        if (!currentDrop || currentDrop.claimed) {
+            return message.reply("❌ Aktuell ist kein Drop aktiv.");
+        }
 
-            const drop = currentDrop.drop;
-            currentDrop.claimed = true;
+        const drop = currentDrop.drop;
+        currentDrop.claimed = true;
 
-            if (!data.items) {
-                data.items = {
-                    rareKey: 0,
-                    epicKey: 0,
-                    legendaryKey: 0
-                };
-            }
+        if (!data.items) {
+            data.items = {
+                rareKey: 0,
+                epicKey: 0,
+                legendaryKey: 0
+            };
+        }
 
-            if (drop.reward === "points") {
-                const points = Math.floor(Math.random() * 21) + 10;
-                data.points += points;
+        let points = 0;
 
-                await message.reply(
-                    `🎉 **Drop erhalten!**\n` +
-                    `⚪ Gewöhnlich\n` +
-                    `💰 +${points} Punkte`
-                );
+        if (drop.type !== "common") {
+            points = Math.floor(Math.random() * 21) + 10;
+            data.points += points;
 
-                if (message.member) {
-                    await updateUserRank(message.member, data.points);
-                }
-            } else {
-                data.items[drop.reward]++;
+            data.items[drop.reward]++;
+        } else {
+            points = Math.floor(Math.random() * 21) + 10;
+            data.points += points;
+        }
 
-                await message.reply(
-                    `🎉 **${drop.text} Drop!**\n` +
-                    `🔑 Du hast **1 Key** erhalten!`
-                );
-            }
+        let replyMessage = `🎉 **Drop erhalten!**\n`;
+        replyMessage += `✨ Seltenheit: ${drop.text}\n`;
+        if (points > 0) replyMessage += `💰 +${points} Punkte\n`;
+        if (drop.type !== "common") replyMessage += `🔑 Du hast **1 Key** erhalten!`;
 
-            saveUserData();
+        await message.reply(replyMessage);
 
-            if (dropExpireTimer) clearTimeout(dropExpireTimer);
-            dropExpireTimer = null;
-            dropMessageId = null;
-            currentDrop = null;
-            break;
+        if (message.member && points > 0) {
+            await updateUserRank(message.member, data.points);
+        }
 
-        // ===== TEST DROPS =====
-        case ".startdrop":
-            if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) return;
-            const channel = await client.channels.fetch(DROP_CHANNEL_ID).catch(() => null);
-            if (!channel) return message.reply("❌ Drop-Channel nicht gefunden!");
-            await startDrop(channel);
-            break;
+        saveUserData();
+
+        if (dropExpireTimer) clearTimeout(dropExpireTimer);
+        dropExpireTimer = null;
+        dropMessageId = null;
+        currentDrop = null;
+        break;
     }
 });
 
