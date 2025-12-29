@@ -1,53 +1,78 @@
 {
   "363773286712344577": {
-    "points": 362,
-    "streak": 14,
-    "lastDaily": "2025-12-28",
+    "points": 58,
+    "streak": 15,
+    "lastDaily": "2025-12-29",
     "gambling": {
-      "xp": 81.12089352629728,
+      "xp": 150.86222183974067,
       "level": 3
     },
-    "highestCrash": 3.21
+    "highestCrash": 3.21,
+    "items": {
+      "rareKey": 0,
+      "epicKey": 0,
+      "legendaryKey": 0
+    }
   },
   "399321151870074880": {
-    "points": 0,
-    "streak": 14,
-    "lastDaily": "2025-12-28",
+    "points": 1000,
+    "streak": 15,
+    "lastDaily": "2025-12-29",
     "gambling": {
-      "xp": 78.09199724200838,
+      "xp": 113.32059168204121,
       "level": 2
     },
-    "highestCrash": 0
+    "highestCrash": 0,
+    "items": {
+      "rareKey": 0,
+      "epicKey": 0,
+      "legendaryKey": 0
+    }
   },
   "742821263164047474": {
-    "points": 45,
-    "streak": 7,
-    "lastDaily": "2025-12-27",
+    "points": 0,
+    "streak": 9,
+    "lastDaily": "2025-12-29",
     "gambling": {
-      "xp": 35.199999999999996,
+      "xp": 37.9,
       "level": 1
     },
-    "highestCrash": 2.64
+    "highestCrash": 2.64,
+    "items": {
+      "rareKey": 0,
+      "epicKey": 0,
+      "legendaryKey": 0
+    }
   },
   "410092006509903872": {
     "points": 0,
-    "streak": 14,
-    "lastDaily": "2025-12-28",
+    "streak": 15,
+    "lastDaily": "2025-12-29",
     "gambling": {
-      "xp": 282.3225267845764,
+      "xp": 389.7280267680943,
       "level": 12
     },
-    "highestCrash": 3.47
+    "highestCrash": 3.47,
+    "items": {
+      "rareKey": 0,
+      "epicKey": 0,
+      "legendaryKey": 0
+    }
   },
   "618852960834945027": {
     "points": 0,
-    "streak": 13,
-    "lastDaily": "2025-12-27",
+    "streak": 15,
+    "lastDaily": "2025-12-29",
     "gambling": {
-      "xp": 133.92535612535613,
-      "level": 2
+      "xp": 46.23004129812114,
+      "level": 5
     },
-    "highestCrash": 3.21
+    "highestCrash": 3.21,
+    "items": {
+      "rareKey": 0,
+      "epicKey": 0,
+      "legendaryKey": 0
+    }
   },
   "1338143192268279879": {
     "points": 0,
@@ -57,6 +82,11 @@
       "xp": 0,
       "level": 1
     },
-    "highestCrash": 0
+    "highestCrash": 0,
+    "items": {
+      "rareKey": 0,
+      "epicKey": 0,
+      "legendaryKey": 0
+    }
   }
 }

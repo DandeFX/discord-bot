@@ -1,33 +1,57 @@
-const { userData, saveUserData } = require("../data/userData");
-
 module.exports = {
     name: ".kamikaze",
-    description: "Beide Spieler verlieren 100 Punkte",
 
     async run(message, args, { updateUserRank }) {
-        const targetUser = message.mentions.users.first();
-        if (!targetUser) return message.reply("❌ Bitte erwähne einen User!");
+        const userId = message.author.id;
+        const target = message.mentions.users.first();
 
-        if (!userData.has(message.author.id)) userData.set(message.author.id, { points: 0, lastDaily: null, streak: 0 });
-        if (!userData.has(targetUser.id)) userData.set(targetUser.id, { points: 0, lastDaily: null, streak: 0 });
+        if (!target) {
+            return message.reply("❌ Usage: `.kamikaze @User`");
+        }
 
-        const authorData = userData.get(message.author.id);
-        const targetData = userData.get(targetUser.id);
+        if (target.bot) {
+            return message.reply("❌ Bots können kein Ziel sein.");
+        }
 
-        if (authorData.points < 100 || targetData.points < 100)
-            return message.reply("❌ Beide brauchen mindestens 100 Punkt(e)!");
+        const userData = require("../data/userData").getUserData(userId);
+        const targetData = require("../data/userData").getUserData(target.id);
 
-        authorData.points -= 100;
-        targetData.points -= 100;
+        if (userData.points < 100) {
+            return message.reply("❌ Du brauchst mindestens **100 Punkte** für Kamikaze.");
+        }
 
-        if (message.member) await updateUserRank(message.member, authorData.points);
-        const targetMember = await message.guild.members.fetch(targetUser.id).catch(() => null);
-        if (targetMember) await updateUserRank(targetMember, targetData.points);
+        const success = Math.random() < 0.5;
 
-        message.reply(
-            `💥 Kamikaze ausgeführt!\n**${message.author.username}**: ${authorData.points} Punkt(e)\n**${targetUser.username}**: ${targetData.points} Punkt(e)`
-        );
-        
-        saveUserData();
+        userData.points -= 100;
+
+        if (!success) {
+            await message.reply(
+                `💥 **KAMIKAZE FEHLGESCHLAGEN!**\n` +
+                `❌ Du verlierst **100 Punkte**\n` +
+                `💰 Neuer Stand: **${userData.points} Punkte**`
+            );
+        } else {
+            const loss = Math.min(100, targetData.points);
+            targetData.points -= loss;
+
+            await message.reply(
+                `🔥 **KAMIKAZE ERFOLG!**\n` +
+                `💣 ${message.author.username} & ${target.username} verlieren jeweils **100 Punkte**\n` +
+                `💰 Dein Stand: **${userData.points} Punkte**`
+            );
+        }
+
+        if (message.member) {
+            await updateUserRank(message.member, userData.points);
+        }
+
+        if (message.guild.members.cache.get(target.id)) {
+            await updateUserRank(
+                message.guild.members.cache.get(target.id),
+                targetData.points
+            );
+        }
+
+        require("../data/userData").saveUserData();
     }
 };

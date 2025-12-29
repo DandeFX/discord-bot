@@ -33,62 +33,77 @@ const client = new Client({
     ]
 });
 
+/* ================= RANK SYSTEM ================= */
+
 async function updateUserRank(member, points) {
     if (!member?.guild) return;
 
     const guild = member.guild;
-    const targetRank = [...RANKS].sort((a, b) => b.min - a.min).find(r => points >= r.min);
+    const targetRank = [...RANKS]
+        .sort((a, b) => b.min - a.min)
+        .find(r => points >= r.min);
+
     if (!targetRank) return;
 
     const newRole = guild.roles.cache.find(r => r.name === targetRank.name);
-    if (!newRole) {
-        console.log("Rang nicht gefunden:", targetRank.name);
-        return;
-    }
+    if (!newRole) return;
 
-    const allRankRoles = RANKS.map(r => guild.roles.cache.find(role => role.name === r.name)).filter(Boolean);
+    const allRankRoles = RANKS
+        .map(r => guild.roles.cache.find(role => role.name === r.name))
+        .filter(Boolean);
 
     for (const role of allRankRoles) {
         if (member.roles.cache.has(role.id) && role.id !== newRole.id) {
-            await member.roles.remove(role).catch(err => console.log("Fehler beim Entfernen:", err));
+            await member.roles.remove(role).catch(() => {});
         }
     }
 
     if (!member.roles.cache.has(newRole.id)) {
-        await member.roles.add(newRole).catch(err => console.log("Fehler beim Hinzufügen:", err));
+        await member.roles.add(newRole).catch(() => {});
     }
 }
 
+/* ================= DROP SYSTEM ================= */
+
 const DROP_CHANNEL_ID = "1450567294714515549";
+const DROP_INTERVAL = 30 * 60 * 1000;
+
 let currentDrop = null;
-let lastDropTime = 0;
 let dropLock = false;
 let dropExpireTimer = null;
 let dropMessageId = null;
 
-async function startDrop(channel, force = false) {
-    if (!channel) return;
-    if (dropLock) return;
+function rollDrop() {
+    const roll = Math.random() * 100;
+
+    if (roll < 1) {
+        return { type: "legendary", text: "🌟 Legendär", reward: "legendaryKey" };
+    }
+    if (roll < 11) {
+        return { type: "epic", text: "💜 Episch", reward: "epicKey" };
+    }
+    if (roll < 41) {
+        return { type: "rare", text: "💙 Selten", reward: "rareKey" };
+    }
+    return { type: "common", text: "⚪ Gewöhnlich", reward: "points" };
+}
+
+async function startDrop(channel) {
+    if (!channel || dropLock || currentDrop) return;
     dropLock = true;
 
-    const now = Date.now();
-    if (!force && now - lastDropTime < 6 * 60 * 60 * 1000) {
-        dropLock = false;
-        return;
-    }
+    currentDrop = {
+        claimed: false,
+        drop: rollDrop()
+    };
 
-    if (currentDrop) {
-        dropLock = false;
-        return;
-    }
+    const msg = await channel.send(
+        `🎁 **Ein Drop ist erschienen!**\n` +
+        `✨ Seltenheit: **${currentDrop.drop.text}**\n\n` +
+        `Tippe \`.drop\` um ihn zu claimen!`
+    );
 
-    currentDrop = { claimed: false };
-    lastDropTime = now;
-
-    const msg = await channel.send("🎁 **Ein Drop ist erschienen!** Tippe `.drop` um ihn zu claimen!");
     dropMessageId = msg.id;
-
-    if (dropExpireTimer) clearTimeout(dropExpireTimer);
 
     dropExpireTimer = setTimeout(async () => {
         if (currentDrop && !currentDrop.claimed) {
@@ -96,7 +111,7 @@ async function startDrop(channel, force = false) {
             try {
                 const m = await channel.messages.fetch(dropMessageId);
                 await m.edit("⌛ **Drop abgelaufen!** (nicht geclaimt)");
-            } catch (_) {}
+            } catch {}
             dropMessageId = null;
             dropExpireTimer = null;
         }
@@ -105,7 +120,7 @@ async function startDrop(channel, force = false) {
     dropLock = false;
 }
 
-const DROP_INTERVAL = 30 * 60 * 1000;
+/* ================= READY ================= */
 
 client.once("ready", () => {
     console.log(`🤖 Bot online als ${client.user.tag}`);
@@ -115,9 +130,11 @@ client.once("ready", () => {
         if (currentDrop) return;
         const channel = await client.channels.fetch(DROP_CHANNEL_ID).catch(() => null);
         if (!channel) return;
-        await startDrop(channel, true);
+        await startDrop(channel);
     }, DROP_INTERVAL);
 });
+
+/* ================= COMMAND HANDLER ================= */
 
 client.on("messageCreate", async message => {
     if (message.author.bot) return;
@@ -128,57 +145,107 @@ client.on("messageCreate", async message => {
     const command = args[0].toLowerCase();
 
     switch (command) {
+
         case ".stats":
             return statsCommand.run(message, data);
+
         case ".stp":
-            return stpCommand.run(message, args);
+            return stpCommand.run(message, args, updateUserRank);
+
         case ".coinflip":
-            return coinflipCommand.run(message, args);
+            return coinflipCommand.run(message, args, updateUserRank);
+
         case ".roulette":
             return rouletteCommand.run(message, args, data, updateUserRank);
+
         case ".hot":
             return hotCommand.run(message, args, data, updateUserRank);
+
         case ".crash":
             return crashCommand.run(message, args, data, { activeCrashGameRef, updateUserRank });
+
         case ".cashout":
             return crashCommand.cashout(message, data, { activeCrashGameRef, updateUserRank });
+
         case ".gift":
             return giftCommand.run(message, args, data, { updateUserRank });
+
         case ".daily":
             return dailyCommand.run(message, data, { updateUserRank });
+
         case ".help":
             return helpCommand.run(message);
+
         case ".punkte":
             return punkteCommand.run(message, args);
+
         case ".leaderboard":
             return leaderboardCommand.run(message, args, client);
+
         case ".ranks":
             return ranksCommand.run(message, args);
+
         case ".kamikaze":
             return kamikazeCommand.run(message, args, { updateUserRank });
+
         case ".add":
         case ".remove":
             return adminPointsCommand.run(message, args, { updateUserRank });
+
         case ".drop":
-            if (!currentDrop || currentDrop.claimed) return;
-            const points = Math.floor(Math.random() * 21) + 10;
-            data.points += points;
-            currentDrop.claimed = true;
-            saveUserData();
-            if (message.member) await updateUserRank(message.member, data.points);
-            if (dropExpireTimer) {
-                clearTimeout(dropExpireTimer);
-                dropExpireTimer = null;
+            if (message.channel.id !== DROP_CHANNEL_ID) return;
+
+            if (!currentDrop || currentDrop.claimed) {
+                return message.reply("❌ Aktuell ist kein Drop aktiv.");
             }
+
+            const drop = currentDrop.drop;
+            currentDrop.claimed = true;
+
+            if (!data.items) {
+                data.items = {
+                    rareKey: 0,
+                    epicKey: 0,
+                    legendaryKey: 0
+                };
+            }
+
+            if (drop.reward === "points") {
+                const points = Math.floor(Math.random() * 21) + 10;
+                data.points += points;
+
+                await message.reply(
+                    `🎉 **Drop erhalten!**\n` +
+                    `⚪ Gewöhnlich\n` +
+                    `💰 +${points} Punkte`
+                );
+
+                if (message.member) {
+                    await updateUserRank(message.member, data.points);
+                }
+            } else {
+                data.items[drop.reward]++;
+
+                await message.reply(
+                    `🎉 **${drop.text} Drop!**\n` +
+                    `🔑 Du hast **1 Key** erhalten!`
+                );
+            }
+
+            saveUserData();
+
+            if (dropExpireTimer) clearTimeout(dropExpireTimer);
+            dropExpireTimer = null;
             dropMessageId = null;
-            await message.reply(`🎉 Glückwunsch! Du hast den Drop geclaimt und **${points} Punkt(e)** erhalten!`);
             currentDrop = null;
             break;
+
+        // ===== TEST DROPS =====
         case ".startdrop":
             if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) return;
             const channel = await client.channels.fetch(DROP_CHANNEL_ID).catch(() => null);
             if (!channel) return message.reply("❌ Drop-Channel nicht gefunden!");
-            await startDrop(channel, true);
+            await startDrop(channel);
             break;
     }
 });
