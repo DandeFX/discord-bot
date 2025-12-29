@@ -25,7 +25,7 @@ function getWinner(choice1, choice2) {
 module.exports = {
     name: ".stp",
 
-    async run(message, args) {
+    async run(message, args, updateUserRank) {
         const challenger = message.author;
         const target = message.mentions.users.first();
         const bet = parseInt(args[2]);
@@ -147,6 +147,14 @@ module.exports = {
                             getUserData(winner.id).points += bet;
                             getUserData(loser.id).points -= bet;
                             saveUserData();
+
+                            if (message.guild) {
+                                const winnerMember = await message.guild.members.fetch(winner.id).catch(() => null);
+                                const loserMember  = await message.guild.members.fetch(loser.id).catch(() => null);
+
+                                if (winnerMember) await updateUserRank(winnerMember, getUserData(winner.id).points);
+                                if (loserMember)  await updateUserRank(loserMember,  getUserData(loser.id).points);
+                            }
 
                             resultText +=
                                 `🏆 **${winner.username} gewinnt!**\n` +
