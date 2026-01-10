@@ -35,12 +35,23 @@ module.exports = {
             getGamblingXPForNextLevel(gambling.level)
         ) || 0;
 
+        // 🔑 Keys (fallback-sicher)
+        const items = data.items || {
+            rareKey: 0,
+            epicKey: 0,
+            legendaryKey: 0
+        };
+
         await message.reply(
             `📊 **Statistiken von ${targetUser.username}**\n` +
             `💰 Punkte: ${data.points}\n` +
             `🔥 Streak: ${data.streak}\n` +
             `⏳ Nächstes Daily: ${next}\n` +
             `🚀 Höchster erfolgreicher Crash: ${highestCrashText}\n\n` +
+            `🔑 **Keys**\n` +
+            `💙 Rare: ${items.rareKey}\n` +
+            `💜 Epic: ${items.epicKey}\n` +
+            `🌟 Legendary: ${items.legendaryKey}\n\n` +
             `🎰 **Gambling Addiction**\n` +
             `📈 Level: ${gambling.level}\n` +
             `✨ XP: ${gambling.xp.toFixed(2)} / ${nextXP.toFixed(2)}`

@@ -11,7 +11,7 @@ const {
 module.exports = {
     name: ".coinflip",
 
-    async run(message, args) {
+    async run(message, args, updateUserRank) {
         const userId = message.author.id;
         const data = getUserData(userId);
 
@@ -29,18 +29,19 @@ module.exports = {
 
         data.points -= bet;
 
+        let resultText;
+
         if (Math.random() < 0.5) {
             const win = bet * 2;
             data.points += win;
-
-            await message.reply(
-                `🪙 **Coinflip**\n🎉 **Gewonnen!** +${win} Punkt(e)\n💰 Neuer Stand: **${data.points}**`
-            );
+            resultText = `🎉 **Gewonnen!** +${win} Punkt(e)`;
         } else {
-            await message.reply(
-                `🪙 **Coinflip**\n❌ **Verloren!** -${bet} Punkt(e)\n💰 Neuer Stand: **${data.points}**`
-            );
+            resultText = `❌ **Verloren!** -${bet} Punkt(e)`;
         }
+
+        await message.reply(
+            `🪙 **Coinflip**\n${resultText}\n💰 Neuer Stand: **${data.points}**`
+        );
 
         if (leveledUp) {
             message.channel.send(
@@ -48,8 +49,9 @@ module.exports = {
             );
         }
 
+        // ✅ RANK UPDATE (KORREKT)
         if (message.member) {
-            message.client.emit("updateRank", message.member, data.points);
+            await updateUserRank(message.member, data.points);
         }
 
         saveUserData();

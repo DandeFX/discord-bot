@@ -1,77 +1,143 @@
 {
   "363773286712344577": {
-    "points": 58,
-    "streak": 15,
-    "lastDaily": "2025-12-29",
+    "points": 4523,
+    "streak": 27,
+    "lastDaily": "2026-01-10",
     "gambling": {
-      "xp": 150.86222183974067,
-      "level": 3
+      "xp": 148.34165840555625,
+      "level": 4
     },
     "highestCrash": 3.21,
     "items": {
-      "rareKey": 0,
-      "epicKey": 0,
-      "legendaryKey": 0
+      "rareKey": 3,
+      "epicKey": 1,
+      "legendaryKey": 0,
+      "items": {
+        "luckToken": 7,
+        "smallXPBoost": 15,
+        "pointBoost": 4,
+        "crashShield": 4,
+        "doubleDrop": 5,
+        "pointBoostPlus": 1,
+        "mediumXPBoost": 4,
+        "megaXPBoost": 1,
+        "jackpotToken": 1
+      },
+      "activeBoosts": {
+        "xpBoost": {
+          "multiplier": 1.25,
+          "expires": 1767721790315
+        }
+      }
+    },
+    "pets": {
+      "owned": {
+        "einhornchen": 1
+      },
+      "active": {
+        "petId": "einhornchen",
+        "rarity": "common",
+        "expires": 1768089561348,
+        "lastPayout": 1768078761348
+      }
     }
   },
   "399321151870074880": {
-    "points": 1000,
-    "streak": 15,
-    "lastDaily": "2025-12-29",
+    "points": 0,
+    "streak": 2,
+    "lastDaily": "2026-01-02",
     "gambling": {
-      "xp": 113.32059168204121,
-      "level": 2
+      "xp": 1.079233217633771,
+      "level": 3
     },
     "highestCrash": 0,
     "items": {
       "rareKey": 0,
       "epicKey": 0,
       "legendaryKey": 0
+    },
+    "pets": {
+      "owned": {},
+      "active": null
     }
   },
   "742821263164047474": {
-    "points": 0,
-    "streak": 9,
-    "lastDaily": "2025-12-29",
+    "points": 897,
+    "streak": 2,
+    "lastDaily": "2026-01-10",
     "gambling": {
-      "xp": 37.9,
+      "xp": 58.61901140684411,
       "level": 1
     },
     "highestCrash": 2.64,
     "items": {
       "rareKey": 0,
-      "epicKey": 0,
-      "legendaryKey": 0
+      "epicKey": 1,
+      "legendaryKey": 0,
+      "items": {
+        "crashShield": 1,
+        "pointBoostPlus": 1,
+        "pointBoost": 4,
+        "smallXPBoost": 3,
+        "luckToken": 3,
+        "mediumXPBoost": 1,
+        "doubleDrop": 2,
+        "goldenLuck": 1
+      }
+    },
+    "pets": {
+      "owned": {},
+      "active": null
     }
   },
   "410092006509903872": {
-    "points": 0,
-    "streak": 15,
-    "lastDaily": "2025-12-29",
+    "points": 20661,
+    "streak": 27,
+    "lastDaily": "2026-01-10",
     "gambling": {
-      "xp": 389.7280267680943,
-      "level": 12
+      "xp": 162.9524707186491,
+      "level": 13
     },
     "highestCrash": 3.47,
     "items": {
       "rareKey": 0,
       "epicKey": 0,
-      "legendaryKey": 0
+      "legendaryKey": 0,
+      "items": {
+        "pointBoost": 15,
+        "smallXPBoost": 10,
+        "luckToken": 5,
+        "mediumXPBoost": 2,
+        "pointBoostPlus": 1,
+        "doubleDrop": 1,
+        "crashShield": 3,
+        "megaXPBoost": 1,
+        "goldenLuck": 1,
+        "legendaryBoost": 1
+      }
+    },
+    "pets": {
+      "owned": {},
+      "active": null
     }
   },
   "618852960834945027": {
     "points": 0,
-    "streak": 15,
-    "lastDaily": "2025-12-29",
+    "streak": 27,
+    "lastDaily": "2026-01-10",
     "gambling": {
-      "xp": 46.23004129812114,
-      "level": 5
+      "xp": 167.5456192843511,
+      "level": 8
     },
     "highestCrash": 3.21,
     "items": {
-      "rareKey": 0,
-      "epicKey": 0,
-      "legendaryKey": 0
+      "rareKey": 16,
+      "epicKey": 7,
+      "legendaryKey": 1
+    },
+    "pets": {
+      "owned": {},
+      "active": null
     }
   },
   "1338143192268279879": {
@@ -87,6 +153,48 @@
       "rareKey": 0,
       "epicKey": 0,
       "legendaryKey": 0
+    },
+    "pets": {
+      "owned": {},
+      "active": null
+    }
+  },
+  "1388203723074830357": {
+    "points": 2,
+    "streak": 0,
+    "lastDaily": null,
+    "gambling": {
+      "xp": 0,
+      "level": 1
+    },
+    "highestCrash": 0,
+    "items": {
+      "rareKey": 0,
+      "epicKey": 0,
+      "legendaryKey": 0
+    },
+    "pets": {
+      "owned": {},
+      "active": null
+    }
+  },
+  "768268608639598624": {
+    "points": 2,
+    "streak": 0,
+    "lastDaily": null,
+    "gambling": {
+      "xp": 0,
+      "level": 1
+    },
+    "highestCrash": 0,
+    "items": {
+      "rareKey": 0,
+      "epicKey": 0,
+      "legendaryKey": 0
+    },
+    "pets": {
+      "owned": {},
+      "active": null
     }
   }
 }

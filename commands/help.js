@@ -8,14 +8,15 @@ module.exports = {
             .setTitle("📜 Hilfe – Verfügbare Commands")
             .setColor(0x1abc9c)
             .setDescription(
-                "Nutze die folgenden Commands, um Punkte zu sammeln, zu spielen oder den Server zu verwalten."
+                "Nutze die folgenden Commands, um Punkte zu sammeln, zu spielen oder Loot zu erhalten."
             )
             .addFields(
                 {
                     name: "📊 Allgemein",
                     value:
 `**.help** – Zeigt diese Hilfe  
-**.punkte [User]** – Punktestand anzeigen  
+**.punkte [User]** – Punktestand anzeigen
+**.peter** – Spielt ein zufälliges Peter GIF ab  
 **.leaderboard** – Top 10 Spieler  
 **.ranks** – Alle Ränge & dein Rang`
                 },
@@ -23,23 +24,39 @@ module.exports = {
                     name: "🎁 Daily & Progress",
                     value:
 `**.daily** – Tägliche Belohnung  
-**.stats** – Punkte, Streak, Cooldown und highest Crash Payout`
+**.stats [@User]** – Stats inkl. Punkte, Streak, Keys & Gambling
+**.inventory** – Zeigt dein Inventar & aktive Effekte
+**.use <item>** – Item benutzen`
                 },
                 {
                     name: "🎲 Spiele",
                     value:
 `**.coinflip [Einsatz]** – 50/50  
-**.roulette [Einsatz] [Zahl/rot/schwarz/grün]**
-**.hot [Einsatz] [heads/tails]** – Heads or Tails
-**.crash [Einsatz]** – Cashout vor dem Crash
-**.stp [Einsatz] [Spieler]** - Schere, Stein, Papier gegen einen anderen Spieler`
+**.roulette [Einsatz] [Zahl/rot/schwarz/grün]**  
+**.hot [Einsatz] [heads/tails]** – Heads or Tails  
+**.crash [Einsatz]** – Cashout vor dem Crash  
+**.stp [Spieler] [Einsatz] ** – Schere, Stein, Papier`
+                },
+                {
+                    name: "🎁 Drops & Lootboxen",
+                    value:
+`**.drop** – Aktiven Drop claimen  
+**.lootbox <rare|epic|legendary>** – Öffnet eine Lootbox`
+                },
+                {
+                    name: "🎒 Items (aus Lootboxen)",
+                    value:
+`• **XP-Boost** – Mehr Gambling-XP  
+• **Point-Boost** – Mehr Punkte  NICHT IMPLEMENTIERT
+• **Crash-Shield** – Schützt vor Crash-Verlust  NICHT IMPLEMENTIERT
+• **Reroll-Token** – Erneuter Wurf  NICHT IMPLEMENTIERT
+• **Kamikaze-Versicherung** – Kein Verlust bei Fail NICHT IMPLEMENTIERT`
                 },
                 {
                     name: "💸 Interaktion",
                     value:
 `**.gift @User [Punkte]** – Punkte verschenken  
-**.kamikaze @User** – Beide verlieren 100 Punkte 
-**.drop** – Drop oder Lucky Drop claimen`
+**.kamikaze @User** – 50/50, Punkteverlust möglich`
                 },
                 {
                     name: "🛠️ Admin",

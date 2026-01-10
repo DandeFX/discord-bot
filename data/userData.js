@@ -15,7 +15,8 @@ function createDefaultUser() {
             legendaryKey: 0
         },
         gambling: { xp: 0, level: 1 },
-        highestCrash: 0
+        highestCrash: 0,
+        pets: { owned: {}, active: null }
     };
 }
 
@@ -34,13 +35,9 @@ function loadUserData() {
             lastDaily: value.lastDaily ?? null,
             gambling: value.gambling ?? { xp: 0, level: 1 },
             highestCrash: value.highestCrash ?? 0,
-            items: value.items ?? {
-                rareKey: 0,
-                epicKey: 0,
-                legendaryKey: 0
-            }
+            items: value.items ?? { rareKey: 0, epicKey: 0, legendaryKey: 0 },
+            pets: value.pets ?? { owned: {}, active: null }
         };
-
         userData.set(id, user);
     }
 
@@ -56,29 +53,17 @@ function getUserData(userId) {
     if (!userData.has(userId)) {
         const defaultUser = createDefaultUser();
         userData.set(userId, defaultUser);
-    } else {
-        const user = userData.get(userId);
-        if (!user.items) {
-            user.items = {
-                rareKey: 0,
-                epicKey: 0,
-                legendaryKey: 0
-            };
-        }
-        if (!user.gambling) {
-            user.gambling = { xp: 0, level: 1 };
-        }
-        if (user.highestCrash === undefined) user.highestCrash = 0;
-        if (user.streak === undefined) user.streak = 0;
-        if (!user.lastDaily) user.lastDaily = null;
-        if (user.points === undefined) user.points = 0;
     }
     return userData.get(userId);
+}
+
+function getAllUsers() {
+    return userData;
 }
 
 module.exports = {
     loadUserData,
     saveUserData,
     getUserData,
-    userData
+    getAllUsers
 };
