@@ -3,12 +3,20 @@ require("dotenv").config();
 const { Client, GatewayIntentBits } = require("discord.js");
 const activeCrashGameRef = { game: null };
 
+// =====================
+// DATA & PET PAYOUT
+// =====================
+const startPetPayoutLoop = require("./utils/petPayout");
+
 const {
     loadUserData,
     saveUserData,
-    getUserData,
+    getUserData
 } = require("./data/userData");
 
+// =====================
+// COMMANDS
+// =====================
 const statsCommand = require("./commands/stats");
 const stpCommand = require("./commands/stp");
 const coinflipCommand = require("./commands/coinflip");
@@ -22,9 +30,18 @@ const punkteCommand = require("./commands/punkte");
 const leaderboardCommand = require("./commands/leaderboard");
 const kamikazeCommand = require("./commands/kamikaze");
 const adminPointsCommand = require("./commands/adminPoints");
+const lootboxCommand = require("./commands/lootbox");
+const inventoryCommand = require("./commands/inventory");
+const useCommand = require("./commands/use");
+const peterCommand = require("./commands/peter");
 const ranksCommand = require("./commands/ranks");
+const petCommand = require("./commands/pets"); // 🐾 PETS
+
 const RANKS = require("./config/ranks");
 
+// =====================
+// CLIENT
+// =====================
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -33,6 +50,9 @@ const client = new Client({
     ]
 });
 
+// =====================
+// RANK UPDATE
+// =====================
 async function updateUserRank(member, points) {
     if (!member?.guild) return;
 
@@ -61,8 +81,11 @@ async function updateUserRank(member, points) {
     }
 }
 
+// =====================
+// DROPS
+// =====================
 const DROP_CHANNEL_ID = "1450567294714515549";
-const DROP_INTERVAL = 30 * 60 * 1000;
+const DROP_INTERVAL = 20 * 60 * 1000;
 
 let currentDrop = null;
 let dropLock = false;
@@ -71,16 +94,9 @@ let dropMessageId = null;
 
 function rollDrop() {
     const roll = Math.random() * 100;
-
-    if (roll < 1) {
-        return { type: "legendary", text: "🌟 Legendär", reward: "legendaryKey" };
-    }
-    if (roll < 11) {
-        return { type: "epic", text: "💜 Episch", reward: "epicKey" };
-    }
-    if (roll < 41) {
-        return { type: "rare", text: "💙 Selten", reward: "rareKey" };
-    }
+    if (roll < 1) return { type: "legendary", text: "🌟 Legendär", reward: "legendaryKey" };
+    if (roll < 11) return { type: "epic", text: "💜 Episch", reward: "epicKey" };
+    if (roll < 31) return { type: "rare", text: "💙 Selten", reward: "rareKey" };
     return { type: "common", text: "⚪ Gewöhnlich", reward: "points" };
 }
 
@@ -88,10 +104,7 @@ async function startDrop(channel) {
     if (!channel || dropLock || currentDrop) return;
     dropLock = true;
 
-    currentDrop = {
-        claimed: false,
-        drop: rollDrop()
-    };
+    currentDrop = { claimed: false, drop: rollDrop() };
 
     const msg = await channel.send(
         `🎁 **Ein Drop ist erschienen!**\n` +
@@ -106,7 +119,7 @@ async function startDrop(channel) {
             currentDrop = null;
             try {
                 const m = await channel.messages.fetch(dropMessageId);
-                await m.edit("⌛ **Drop abgelaufen!** (nicht geclaimt)");
+                await m.edit("⌛ **Drop abgelaufen!**");
             } catch {}
             dropMessageId = null;
             dropExpireTimer = null;
@@ -116,10 +129,18 @@ async function startDrop(channel) {
     dropLock = false;
 }
 
+// =====================
+// READY
+// =====================
 client.once("ready", () => {
     console.log(`🤖 Bot online als ${client.user.tag}`);
+
     loadUserData();
 
+    // 🐾 PET PAYOUT LOOP
+    startPetPayoutLoop(client, updateUserRank);
+
+    // 🎁 DROPS
     setInterval(async () => {
         if (currentDrop) return;
         const channel = await client.channels.fetch(DROP_CHANNEL_ID).catch(() => null);
@@ -128,110 +149,75 @@ client.once("ready", () => {
     }, DROP_INTERVAL);
 });
 
+// =====================
+// MESSAGE HANDLER
+// =====================
 client.on("messageCreate", async message => {
     if (message.author.bot) return;
 
-    const userId = message.author.id;
-    const data = getUserData(userId);
+    const data = getUserData(message.author.id);
     const args = message.content.trim().split(/ +/);
     const command = args[0].toLowerCase();
 
     switch (command) {
 
-        case ".stats":
-            return statsCommand.run(message, data);
-
-        case ".stp":
-            return stpCommand.run(message, args, updateUserRank);
-
-        case ".coinflip":
-            return coinflipCommand.run(message, args, updateUserRank);
-
-        case ".roulette":
-            return rouletteCommand.run(message, args, data, updateUserRank);
-
-        case ".hot":
-            return hotCommand.run(message, args, data, updateUserRank);
-
-        case ".crash":
-            return crashCommand.run(message, args, data, { activeCrashGameRef, updateUserRank });
-
-        case ".cashout":
-            return crashCommand.cashout(message, data, { activeCrashGameRef, updateUserRank });
-
-        case ".gift":
-            return giftCommand.run(message, args, data, { updateUserRank });
-
-        case ".daily":
-            return dailyCommand.run(message, data, { updateUserRank });
-
-        case ".help":
-            return helpCommand.run(message);
-
-        case ".punkte":
-            return punkteCommand.run(message, args);
-
-        case ".leaderboard":
-            return leaderboardCommand.run(message, args, client);
-
-        case ".ranks":
-            return ranksCommand.run(message, args);
-
-        case ".kamikaze":
-            return kamikazeCommand.run(message, args, { updateUserRank });
-
+        case ".stats": return statsCommand.run(message, data);
+        case ".stp": return stpCommand.run(message, args, updateUserRank);
+        case ".coinflip": return coinflipCommand.run(message, args, updateUserRank);
+        case ".roulette": return rouletteCommand.run(message, args, data, updateUserRank);
+        case ".hot": return hotCommand.run(message, args, data, updateUserRank);
+        case ".crash": return crashCommand.run(message, args, data, { activeCrashGameRef, updateUserRank });
+        case ".cashout": return crashCommand.cashout(message, data, { activeCrashGameRef, updateUserRank });
+        case ".gift": return giftCommand.run(message, args, data, { updateUserRank });
+        case ".daily": return dailyCommand.run(message, data, { updateUserRank });
+        case ".help": return helpCommand.run(message);
+        case ".punkte": return punkteCommand.run(message, args);
+        case ".leaderboard": return leaderboardCommand.run(message, args, client);
+        case ".ranks": return ranksCommand.run(message, args);
+        case ".kamikaze": return kamikazeCommand.run(message, args, { updateUserRank });
         case ".add":
-        case ".remove":
-            return adminPointsCommand.run(message, args, { updateUserRank });
+        case ".remove": return adminPointsCommand.run(message, args, { updateUserRank });
+        case ".lootbox": return lootboxCommand.run(message, args);
+        case ".inventory": return inventoryCommand.run(message);
+        case ".use": return useCommand.run(message, args);
+        case ".peter": return peterCommand.run(message);
 
+        // 🐾 PET COMMAND
+        case ".pet":
+            return petCommand.run(message, args);
+
+        // 🎁 DROP
         case ".drop":
-        if (message.channel.id !== DROP_CHANNEL_ID) return;
+            if (message.channel.id !== DROP_CHANNEL_ID) return;
+            if (!currentDrop || currentDrop.claimed) {
+                return message.reply("❌ Aktuell ist kein Drop aktiv.");
+            }
 
-        if (!currentDrop || currentDrop.claimed) {
-            return message.reply("❌ Aktuell ist kein Drop aktiv.");
-        }
+            currentDrop.claimed = true;
+            const drop = currentDrop.drop;
 
-        const drop = currentDrop.drop;
-        currentDrop.claimed = true;
+            if (!data.items) {
+                data.items = { rareKey: 0, epicKey: 0, legendaryKey: 0 };
+            }
 
-        if (!data.items) {
-            data.items = {
-                rareKey: 0,
-                epicKey: 0,
-                legendaryKey: 0
-            };
-        }
-
-        let points = 0;
-
-        if (drop.type !== "common") {
-            points = Math.floor(Math.random() * 21) + 10;
+            const points = Math.floor(Math.random() * 21) + 10;
             data.points += points;
+            if (drop.type !== "common") data.items[drop.reward]++;
 
-            data.items[drop.reward]++;
-        } else {
-            points = Math.floor(Math.random() * 21) + 10;
-            data.points += points;
-        }
+            await message.reply(
+                `🎉 **Drop erhalten!**\n` +
+                `✨ Seltenheit: ${drop.text}\n` +
+                `💰 +${points} Punkte`
+            );
 
-        let replyMessage = `🎉 **Drop erhalten!**\n`;
-        replyMessage += `✨ Seltenheit: ${drop.text}\n`;
-        if (points > 0) replyMessage += `💰 +${points} Punkte\n`;
-        if (drop.type !== "common") replyMessage += `🔑 Du hast **1 Key** erhalten!`;
+            if (message.member) await updateUserRank(message.member, data.points);
+            saveUserData();
 
-        await message.reply(replyMessage);
-
-        if (message.member && points > 0) {
-            await updateUserRank(message.member, data.points);
-        }
-
-        saveUserData();
-
-        if (dropExpireTimer) clearTimeout(dropExpireTimer);
-        dropExpireTimer = null;
-        dropMessageId = null;
-        currentDrop = null;
-        break;
+            if (dropExpireTimer) clearTimeout(dropExpireTimer);
+            currentDrop = null;
+            dropMessageId = null;
+            dropExpireTimer = null;
+            break;
     }
 });
 
