@@ -1,16 +1,16 @@
 {
   "363773286712344577": {
-    "points": 4523,
-    "streak": 27,
-    "lastDaily": "2026-01-10",
+    "points": 5229,
+    "streak": 30,
+    "lastDaily": "2026-01-13",
     "gambling": {
-      "xp": 148.34165840555625,
+      "xp": 170.2112875029818,
       "level": 4
     },
     "highestCrash": 3.21,
     "items": {
-      "rareKey": 3,
-      "epicKey": 1,
+      "rareKey": 5,
+      "epicKey": 5,
       "legendaryKey": 0,
       "items": {
         "luckToken": 7,
@@ -32,20 +32,21 @@
     },
     "pets": {
       "owned": {
-        "einhornchen": 1
+        "einhornchen": 1,
+        "nils nashorn": 1
       },
       "active": {
         "petId": "einhornchen",
         "rarity": "common",
-        "expires": 1768089561348,
-        "lastPayout": 1768078761348
+        "expires": 1768344636904,
+        "lastPayout": 1768333836904
       }
     }
   },
   "399321151870074880": {
-    "points": 0,
-    "streak": 2,
-    "lastDaily": "2026-01-02",
+    "points": 37,
+    "streak": 1,
+    "lastDaily": "2026-01-13",
     "gambling": {
       "xp": 1.079233217633771,
       "level": 3
@@ -62,16 +63,16 @@
     }
   },
   "742821263164047474": {
-    "points": 897,
-    "streak": 2,
-    "lastDaily": "2026-01-10",
+    "points": 1189,
+    "streak": 5,
+    "lastDaily": "2026-01-13",
     "gambling": {
-      "xp": 58.61901140684411,
+      "xp": 58.63905148700443,
       "level": 1
     },
     "highestCrash": 2.64,
     "items": {
-      "rareKey": 0,
+      "rareKey": 2,
       "epicKey": 1,
       "legendaryKey": 0,
       "items": {
@@ -91,18 +92,18 @@
     }
   },
   "410092006509903872": {
-    "points": 20661,
-    "streak": 27,
-    "lastDaily": "2026-01-10",
+    "points": 0,
+    "streak": 30,
+    "lastDaily": "2026-01-13",
     "gambling": {
-      "xp": 162.9524707186491,
+      "xp": 196.5493242667538,
       "level": 13
     },
     "highestCrash": 3.47,
     "items": {
       "rareKey": 0,
       "epicKey": 0,
-      "legendaryKey": 0,
+      "legendaryKey": 1,
       "items": {
         "pointBoost": 15,
         "smallXPBoost": 10,
@@ -117,27 +118,41 @@
       }
     },
     "pets": {
-      "owned": {},
+      "owned": {
+        "willy wurm": 1
+      },
       "active": null
     }
   },
   "618852960834945027": {
     "points": 0,
-    "streak": 27,
-    "lastDaily": "2026-01-10",
+    "streak": 30,
+    "lastDaily": "2026-01-13",
     "gambling": {
-      "xp": 167.5456192843511,
-      "level": 8
+      "xp": 373.7743778877916,
+      "level": 9
     },
     "highestCrash": 3.21,
     "items": {
-      "rareKey": 16,
-      "epicKey": 7,
-      "legendaryKey": 1
+      "rareKey": 3,
+      "epicKey": 10,
+      "legendaryKey": 1,
+      "items": {
+        "pointBoost": 6,
+        "smallXPBoost": 11,
+        "luckToken": 4
+      }
     },
     "pets": {
-      "owned": {},
-      "active": null
+      "owned": {
+        "nils nashorn": 1
+      },
+      "active": {
+        "petId": "nils nashorn",
+        "rarity": "uncommon",
+        "expires": 1768344660218,
+        "lastPayout": 1768333860218
+      }
     }
   },
   "1338143192268279879": {

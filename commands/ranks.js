@@ -1,12 +1,12 @@
 const RANKS = require("../config/ranks");
-const { userData } = require("../data/userData");
+const { getUserData } = require("../data/userData");
 
 module.exports = {
     name: ".ranks",
     async run(message, args) {
         const userId = message.author.id;
-        const data = userData.get(userId) || { points: 0 };
-        const userPoints = data.points;
+        const data = getUserData(userId); // ✅ statt userData.get()
+        const userPoints = data.points || 0;
 
         const currentRank = RANKS
             .slice()
@@ -16,8 +16,10 @@ module.exports = {
         let text = "📜 **Ränge & benötigte Punkt(e)**\n\n";
 
         for (const rank of RANKS.sort((a, b) => b.min - a.min)) {
-            if (rank.name === currentRank.name) text += `➡️ **${rank.name}** – ${rank.min} Punkt(e)\n`;
-            else text += `${rank.name} – ${rank.min} Punkt(e)\n`;
+            if (currentRank && rank.name === currentRank.name) 
+                text += `➡️ **${rank.name}** – ${rank.min} Punkt(e)\n`;
+            else 
+                text += `${rank.name} – ${rank.min} Punkt(e)\n`;
         }
 
         return message.reply(text);

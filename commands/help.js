@@ -46,11 +46,7 @@ module.exports = {
                 {
                     name: "🎒 Items (aus Lootboxen)",
                     value:
-`• **XP-Boost** – Mehr Gambling-XP  
-• **Point-Boost** – Mehr Punkte  NICHT IMPLEMENTIERT
-• **Crash-Shield** – Schützt vor Crash-Verlust  NICHT IMPLEMENTIERT
-• **Reroll-Token** – Erneuter Wurf  NICHT IMPLEMENTIERT
-• **Kamikaze-Versicherung** – Kein Verlust bei Fail NICHT IMPLEMENTIERT`
+`• **XP-Boost** – Mehr Gambling-XP`
                 },
                 {
                     name: "💸 Interaktion",
@@ -62,9 +58,7 @@ module.exports = {
                     name: "🛠️ Admin",
                     value:
 `**.add @User [Punkte]** – Punkte hinzufügen  
-**.remove @User [Punkte]** – Punkte entfernen  
-**.clear [Anzahl]** – Nachrichten löschen  
-**.startdrop** – Manuellen Drop starten`
+**.remove @User [Punkte]** – Punkte entfernen`
                 }
             )
             .setFooter({ text: "Judgement Inc" })
